@@ -1,5 +1,5 @@
 const express = require('express');
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-core');
 const app = express();
 
 app.get('/stream', async (req, res) => {
@@ -12,6 +12,7 @@ app.get('/stream', async (req, res) => {
   try {
     browser = await puppeteer.launch({
       headless: 'new',
+      executablePath: '/opt/render/project/chrome/chrome',
       args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
 
@@ -19,7 +20,6 @@ app.get('/stream', async (req, res) => {
 
     let streamUrl = null;
 
-    // Watch for stream media requests
     page.on('request', request => {
       const reqUrl = request.url();
       if (reqUrl.includes('.aac') || reqUrl.includes('.m3u8') || reqUrl.includes('.mp3')) {
@@ -29,11 +29,9 @@ app.get('/stream', async (req, res) => {
 
     await page.goto(pageUrl, { waitUntil: 'networkidle2', timeout: 20000 });
 
-    // Click the Play button
     await page.waitForSelector('.PlayButton-module__button--3behY', { timeout: 10000 });
     await page.click('.PlayButton-module__button--3behY');
 
-    // Wait for network request to fire
     await page.waitForTimeout(5000);
 
     await browser.close();
