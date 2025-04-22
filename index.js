@@ -1,5 +1,5 @@
 const express = require('express');
-const puppeteer = require('puppeteer-core');
+const puppeteer = require('puppeteer');
 const app = express();
 
 app.get('/stream', async (req, res) => {
@@ -12,7 +12,6 @@ app.get('/stream', async (req, res) => {
   try {
     browser = await puppeteer.launch({
       headless: 'new',
-      executablePath: '/opt/render/project/chrome/chrome',
       args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
 
